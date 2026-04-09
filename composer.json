@@ -1,0 +1,76 @@
+{
+    "name": "maduser/agent",
+    "description": "Workflow-backed agent runtime built on top of llm-client and argon-workflows.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "maduser/llm-client": "*@dev",
+        "maduser/argon-workflows": "*@dev",
+        "psr/container": "^2.0"
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
+        "phpunit/phpunit": "^10.5",
+        "slevomat/coding-standard": "^8.28",
+        "squizlabs/php_codesniffer": "^4.0.1",
+        "vimeo/psalm": "^6.15.1",
+        "symfony/console": "^7.3",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Maduser\\Agent\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Support\\": "tests/Support/",
+            "Tests\\Unit\\": "tests/unit/",
+            "Tests\\Integration\\": "tests/integration/",
+            "Maduser\\AgentCli\\": "cliapp/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test:coverage": "vendor/bin/phpunit --coverage-clover=coverage.xml --coverage-html=.coverage",
+        "phpcs": "vendor/bin/phpcs --standard=phpcs.xml",
+        "phpcs:fix": "vendor/bin/phpcbf --standard=phpcs.xml",
+        "psalm": "vendor/bin/psalm --threads=1 --output-format=github",
+        "check": [
+            "@test",
+            "@psalm",
+            "@phpcs"
+        ],
+        "ci": [
+            "@test",
+            "@test:coverage",
+            "@psalm",
+            "@phpcs"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../llm-client",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../maduser-argon-workflows",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

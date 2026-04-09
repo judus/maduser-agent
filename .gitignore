@@ -1,0 +1,12 @@
+/vendor/
+.env
+.env.*
+!.env.example
+.phpunit.result.cache
+.coverage/
+coverage.xml
+coverage/
+.DS_Store
+.idea/
+.vscode/
+*.log

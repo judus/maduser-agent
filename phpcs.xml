@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="maduser-agent"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+  <rule ref="PSR12"/>
+  <config name="installed_paths" value="vendor/slevomat/coding-standard"/>
+  <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+    <properties>
+      <property name="spacesCountAroundEqualsSign" value="0"/>
+    </properties>
+  </rule>
+  <rule ref="SlevomatCodingStandard.Functions.UnusedParameter">
+    <exclude-pattern>*</exclude-pattern>
+  </rule>
+  <file>src/</file>
+  <file>tests/</file>
+  <exclude-pattern>*/tests/resources/cache/*</exclude-pattern>
+</ruleset>
