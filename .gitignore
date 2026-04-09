@@ -3,6 +3,8 @@
 .env.*
 !.env.example
 .phpunit.result.cache
+.phpunit.cache/
+.psalm.cache/
 .coverage/
 coverage.xml
 coverage/
