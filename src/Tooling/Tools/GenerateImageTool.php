@@ -13,10 +13,7 @@ final readonly class GenerateImageTool implements ToolInterface
 {
     public function __construct(
         private ImageGenerationClient $imageClient,
-        private string $defaultSize = '1024x1024',
-        private string $defaultQuality = 'medium',
-        private string $defaultBackground = 'auto',
-        private string $defaultFormat = 'png',
+        private string $defaultOrientation = 'landscape',
     ) {
     }
 
@@ -31,8 +28,8 @@ final readonly class GenerateImageTool implements ToolInterface
     {
         return 'Generates an image from an internal image prompt, displays it to the user, '
             . 'and returns a private image artifact to the caller. Use "prompt" for the '
-            . 'image model instructions and "caption" for the short user-facing text shown '
-            . 'with the image.';
+            . 'image model instructions, "caption" for the short user-facing text shown '
+            . 'with the image, and "orientation" for the framing direction.';
     }
 
     #[Override]
@@ -51,21 +48,14 @@ final readonly class GenerateImageTool implements ToolInterface
                     'description' => 'A short user-facing caption shown alongside the generated '
                         . 'image. This should provide context to the user in-character.',
                 ],
-                'size' => [
+                'style' => [
                     'type' => 'string',
-                    'description' => 'Optional image size, e.g. 1024x1024.',
+                    'description' => 'Optional style id. If style matters and you are unsure, discover valid styles first.',
                 ],
-                'quality' => [
+                'orientation' => [
                     'type' => 'string',
-                    'description' => 'Optional image quality.',
-                ],
-                'background' => [
-                    'type' => 'string',
-                    'description' => 'Optional image background mode.',
-                ],
-                'format' => [
-                    'type' => 'string',
-                    'description' => 'Optional image output format.',
+                    'description' => 'Optional framing direction. Prefer landscape, portrait, or square.',
+                    'enum' => ['landscape', 'portrait', 'square'],
                 ],
             ],
             'required' => ['prompt', 'caption'],
@@ -82,14 +72,14 @@ final readonly class GenerateImageTool implements ToolInterface
     {
         $prompt = (string) ($args['prompt'] ?? '');
         $caption = (string) ($args['caption'] ?? '');
+        $style = (string) ($args['style'] ?? '');
+        $orientation = (string) ($args['orientation'] ?? $this->defaultOrientation);
 
         $result = $this->imageClient->generate(
             prompt: $prompt,
             options: [
-                'size' => (string) ($args['size'] ?? $this->defaultSize),
-                'quality' => (string) ($args['quality'] ?? $this->defaultQuality),
-                'background' => (string) ($args['background'] ?? $this->defaultBackground),
-                'output_format' => (string) ($args['format'] ?? $this->defaultFormat),
+                'style' => $style,
+                'orientation' => $orientation,
             ],
         );
 
@@ -101,6 +91,8 @@ final readonly class GenerateImageTool implements ToolInterface
                 'type' => 'image',
                 'prompt' => $prompt,
                 'caption' => $caption,
+                'style' => $style !== '' ? $style : null,
+                'orientation' => $orientation,
                 'base64' => $image->base64,
                 'url' => $image->url,
                 'revised_prompt' => $image->revisedPrompt,
