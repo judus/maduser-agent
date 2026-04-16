@@ -57,18 +57,12 @@
     },
     "repositories": [
         {
-            "type": "path",
-            "url": "../llm-client",
-            "options": {
-                "symlink": true
-            }
+            "type": "vcs",
+            "url": "https://github.com/judus/llm-client.git"
         },
         {
-            "type": "path",
-            "url": "../maduser-argon-workflows",
-            "options": {
-                "symlink": true
-            }
+            "type": "vcs",
+            "url": "https://github.com/judus/argon-workflows.git"
         }
     ],
     "minimum-stability": "stable",
