@@ -12,9 +12,11 @@ use Maduser\Argon\Workflows\Contracts\StateHandlerInterface;
 use Maduser\Argon\Workflows\HandlerResult;
 use Override;
 
-use function array_map;
+use function array_filter;
+use function array_values;
 use function count;
 use function implode;
+use function is_array;
 use function is_string;
 use function max;
 use function trim;
@@ -91,9 +93,13 @@ final class SummarizingHandler implements StateHandlerInterface
     ): string {
         $prompt = implode("\n\n", [
             'Update the internal conversation summary.',
-            'Keep it factual, compact, and focused on durable context.',
-            'Preserve important user preferences, commitments, emotional developments, and unresolved threads.',
-            'Do not include filler or stylistic flourish.',
+            'Rewrite the summary from scratch using the previous summary and the messages to compress.',
+            'Keep it factual, compact, and focused on durable context only.',
+            'Preserve stable user preferences, commitments, relationship shifts, accepted or rejected offers, meaningful facts, and unresolved threads.',
+            'Drop greetings, filler, transient banter, temporary scene staging, procedural chatter, UI choice labels, and already-resolved details.',
+            'Do not duplicate points that are already covered by the previous summary.',
+            'Prefer terse bullet points and keep the final summary under 10 bullets.',
+            'Do not include stylistic flourish or quote dialogue unless the wording itself matters long-term.',
             '',
             'Previous summary:',
             $previousSummary !== null && $previousSummary !== '' ? $previousSummary : '[none]',
@@ -116,16 +122,45 @@ final class SummarizingHandler implements StateHandlerInterface
      */
     private function buildTranscript(array $messages): string
     {
-        return implode("\n", array_map(
-            static function (MessageInterface $message): string {
-                /** @var array<string, mixed> $data */
-                $data = $message->toArray();
-                /** @var mixed $content */
-                $content = $data['content'] ?? '';
+        $lines = [];
 
-                return strtoupper($message->getRole()) . ': ' . (is_string($content) ? $content : '');
-            },
-            $messages,
-        ));
+        foreach ($messages as $message) {
+            /** @var array<string, mixed> $data */
+            $data = $message->toArray();
+            /** @var mixed $content */
+            $content = $data['content'] ?? '';
+            /** @var mixed $images */
+            $images = $data['images'] ?? null;
+
+            $normalizedContent = is_string($content) ? trim($content) : '';
+            $imageCount = 0;
+
+            if (is_array($images)) {
+                $imageCount = count(array_values(array_filter(
+                    $images,
+                    static fn (mixed $image): bool => is_string($image) && trim($image) !== '',
+                )));
+            }
+
+            $parts = [];
+
+            if ($normalizedContent !== '') {
+                $parts[] = $normalizedContent;
+            }
+
+            if ($imageCount > 0) {
+                $parts[] = $imageCount === 1
+                    ? '[attached 1 image]'
+                    : '[attached ' . $imageCount . ' images]';
+            }
+
+            if ($parts === []) {
+                continue;
+            }
+
+            $lines[] = strtoupper($message->getRole()) . ': ' . implode(' ', $parts);
+        }
+
+        return implode("\n", $lines);
     }
 }
