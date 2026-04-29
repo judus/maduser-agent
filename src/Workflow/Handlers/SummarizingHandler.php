@@ -14,6 +14,7 @@ use Override;
 
 use function array_filter;
 use function array_values;
+use function array_map;
 use function count;
 use function implode;
 use function is_array;
@@ -95,8 +96,9 @@ final class SummarizingHandler implements StateHandlerInterface
             'Update the internal conversation summary.',
             'Rewrite the summary from scratch using the previous summary and the messages to compress.',
             'Keep it factual, compact, and focused on durable context only.',
-            'Preserve stable user preferences, commitments, relationship shifts, accepted or rejected offers, meaningful facts, and unresolved threads.',
-            'Drop greetings, filler, transient banter, temporary scene staging, procedural chatter, UI choice labels, and already-resolved details.',
+            'Preserve stable user preferences, explicit commitments, accepted or rejected offers, meaningful facts, persistent relationship shifts, and unresolved obligations that still matter beyond the immediate scene.',
+            'Do not preserve temporary scene framing, flirt escalation, roleplay momentum, speculative plans, answered invitations, procedural chatter, UI choice labels, or already-resolved details.',
+            'When in doubt whether a detail is durable or scene-local, drop it.',
             'Do not duplicate points that are already covered by the previous summary.',
             'Prefer terse bullet points and keep the final summary under 10 bullets.',
             'Do not include stylistic flourish or quote dialogue unless the wording itself matters long-term.',

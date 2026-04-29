@@ -86,7 +86,14 @@ final readonly class ThinkingHandler implements StateHandlerInterface
             return $basePrompt;
         }
 
-        $summaryPrompt = "Conversation summary:\n" . $summary;
+        $summaryPrompt = implode("\n", [
+            'Older compressed conversation context:',
+            $summary,
+            '',
+            'Use this summary only as background memory.',
+            'Always prioritize the explicit recent messages in history over the summary.',
+            'If the recent messages establish a different topic, mood, or scene, follow the recent messages and treat the summary as stale background context.',
+        ]);
 
         if ($basePrompt === null || $basePrompt === '') {
             return $summaryPrompt;
